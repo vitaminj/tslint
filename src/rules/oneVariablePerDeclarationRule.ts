@@ -19,6 +19,17 @@ import * as ts from "typescript";
 import * as Lint from "../lint";
 
 export class Rule extends Lint.Rules.AbstractRule {
+    /* tslint:disable:object-literal-sort-keys */
+    public static metadata: Lint.IRuleMetadata = {
+        ruleName: "one-variable-per-declaration",
+        description: "Disallows multiple variable definitions in the same declaration statement.",
+        optionsDescription: "Not configurable.",
+        options: {},
+        optionExamples: ["true"],
+        type: "style",
+    };
+    /* tslint:enable:object-literal-sort-keys */
+
     public static FAILURE_STRING = "Forbidden multiple variable definitions in the same statement";
 
     public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
