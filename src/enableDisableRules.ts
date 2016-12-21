@@ -22,10 +22,14 @@ import {IEnableDisablePosition} from "./ruleLoader";
 
 export class EnableDisableRulesWalker extends SkippableTokenAwareRuleWalker {
     public enableDisableRuleMap: {[rulename: string]: IEnableDisablePosition[]} = {};
+    // Whether the rule is globally enable (true) or disabled (false)
+    private ruleSate: {[rulename: string]: boolean};
 
     public visitSourceFile(node: ts.SourceFile) {
         super.visitSourceFile(node);
         const scan = ts.createScanner(ts.ScriptTarget.ES5, false, ts.LanguageVariant.Standard, node.text);
+
+        this.ruleSate = {};
 
         scanAllTokens(scan, (scanner: ts.Scanner) => {
             const startPos = scanner.getStartPos();
@@ -72,7 +76,7 @@ export class EnableDisableRulesWalker extends SkippableTokenAwareRuleWalker {
                     if (!(ruleToAdd in this.enableDisableRuleMap)) {
                         this.enableDisableRuleMap[ruleToAdd] = [];
                     }
-                    if (isCurrentLine) {
+                    if (isCurrentLine && isEnabled !== this.ruleSate[ruleToAdd]) {
                         // start at the beginning of the current line
                         this.enableDisableRuleMap[ruleToAdd].push({
                             isEnabled: isEnabled,
@@ -90,12 +94,13 @@ export class EnableDisableRulesWalker extends SkippableTokenAwareRuleWalker {
                             position: startingPosition,
                         });
                         // end at the beginning of the line following the next line
-                        if (isNextLine) {
+                        if (isNextLine && isEnabled !== this.ruleSate[ruleToAdd]) {
                             this.enableDisableRuleMap[ruleToAdd].push({
                                 isEnabled: !isEnabled,
                                 position: this.getStartOfLinePosition(node, startingPosition, 2),
                             });
                         }
+                        this.ruleSate[ruleToAdd] = isEnabled;
                     }
                 }
             }

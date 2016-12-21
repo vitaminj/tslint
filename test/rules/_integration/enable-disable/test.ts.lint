@@ -51,3 +51,10 @@ var AAAaA = 'test'
 
 /* tslint:disable:quotemark */
 var s = 'xxx';
+
+/* tslint:disable:quotemark */
+var s = 'xxx';
+/* tslint:disable-next-line:quotemark */
+var s = 'xxx';
+var s = 'xxx';
+
